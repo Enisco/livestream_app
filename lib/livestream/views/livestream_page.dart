@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:stream_video_flutter/stream_video_flutter.dart';
 
@@ -126,7 +128,67 @@ class LiveStreamScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
+                ),
+              if (callState.localParticipant?.userId !=
+                  callState.createdByUserId)
+                Positioned(
+                  bottom: 10,
+                  child: Center(
+                    child: StreamCallContainer(
+                      call: currentStream,
+                      callContentBuilder: (
+                        BuildContext context,
+                        Call call,
+                        CallState callState,
+                      ) {
+                        return StreamCallContent(
+                          call: call,
+                          callState: callState,
+                          callControlsBuilder: (
+                            BuildContext context,
+                            Call call,
+                            CallState callState,
+                          ) {
+                            final localParticipant =
+                                callState.localParticipant!;
+                            return StreamCallControls(
+                              options: [
+                                CallControlOption(
+                                  icon: const Icon(Icons.chat_outlined),
+                                  onPressed: () {
+                                    // Open your chat window
+                                  },
+                                ),
+                                FlipCameraOption(
+                                  call: call,
+                                  localParticipant: localParticipant,
+                                ),
+                                AddReactionOption(
+                                  call: call,
+                                  localParticipant: localParticipant,
+                                ),
+                                ToggleMicrophoneOption(
+                                  call: call,
+                                  localParticipant: localParticipant,
+                                ),
+                                ToggleCameraOption(
+                                  call: call,
+                                  localParticipant: localParticipant,
+                                ),
+                                LeaveCallOption(
+                                  call: call,
+                                  onLeaveCallTap: () {
+                                    call.leave();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
             ],
           );
         },
