@@ -65,8 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
       final apiKey = 'hd8szvscpxvd',
           token = userStreamToken,
           // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmFzaWwifQ.N44i27-o800njeSlcvH2HGlBfTl8MH4vQl0ddkq5BVI',
-          userId = userIdController.text.trim(),
-          // userName = 'Willard Hessel',
+          userId = userIdController.text.trim(), 
+          // userName = 'Willard Hessel', 
           callId = streamIdController.text.trim();
 
       StreamVideo(
