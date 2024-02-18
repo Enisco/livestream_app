@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, avoid_print
+
 import 'package:http/http.dart' as http;
 
 const endpoint = "http://3.16.241.38:5000/get_token/";

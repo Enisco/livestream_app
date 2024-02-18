@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -31,13 +32,13 @@ class _MyHomePageState extends State<MyHomePage> {
     userIdController = TextEditingController();
   }
 
-  generateUserToken({required String userId, required bool isCreating}) {
+  generateUserToken({required String userId, required bool isCreating}) async {
     setState(() {
       loading = true;
     });
     ApiService apiService = ApiService();
 
-    final response = apiService.generateToken(userId);
+    final response = await apiService.generateToken(userId);
     if (response.toString() == "error") {
       Fluttertoast.showToast(msg: "Error occured");
       setState(() {
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
           response.toString(),
         ),
       );
-      print(" ********** tokenData: ${tokenData.toJson()}");
+      print(" ********** token gen: ${tokenData.token?.toString()}");
       _createOrJoinLivestream(
         isCreating: isCreating,
         userStreamToken: tokenData.token!,
@@ -57,23 +58,33 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  String generateRandomString() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random.secure();
+    return List.generate(12, (index) => chars[random.nextInt(chars.length)])
+        .join();
+  }
+
   _createOrJoinLivestream({
     required bool isCreating,
     required String userStreamToken,
   }) async {
     try {
-      final apiKey = 'hd8szvscpxvd',
+      final apiKey = 'mgeuu28wmz7g',
           token = userStreamToken,
-          // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmFzaWwifQ.N44i27-o800njeSlcvH2HGlBfTl8MH4vQl0ddkq5BVI',
-          userId = userIdController.text.trim(), 
-          // userName = 'Willard Hessel', 
+          userId = userIdController.text.trim(),
+          userName = '$userId Tester',
           callId = streamIdController.text.trim();
+      print(" `````` Call ID: $callId ");
+
+      StreamVideo.reset();
 
       StreamVideo(
         apiKey,
         user: User.regular(
           userId: userId,
           role: isCreating ? 'admin' : 'user',
+          name: userName,
         ),
         userToken: token,
       );
@@ -86,11 +97,18 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
       call.connectOptions = CallConnectOptions(
+        // camera: isCreating ? TrackOption.enabled() : TrackOption.disabled(),
+        // microphone: isCreating ? TrackOption.enabled() : TrackOption.disabled(),
+        // screenShare:
+        //     isCreating ? TrackOption.enabled() : TrackOption.disabled(),
+
         camera: TrackOption.enabled(),
         microphone: TrackOption.enabled(),
+        // screenShare: TrackOption.enabled(),
       );
 
       final result = await call.getOrCreate();
+      print(' ========== call result: $result');
       if (result.isSuccess) {
         await call.join();
         if (isCreating == true) {
@@ -105,8 +123,12 @@ class _MyHomePageState extends State<MyHomePage> {
         print(' --------- Not able to create or join a call.');
       }
     } catch (e) {
-      print(' ????????? Error creating or joining a call.');
+      print(' ????????? Error creating or joining a call: ${e.toString()}.');
     }
+
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -139,20 +161,35 @@ class _MyHomePageState extends State<MyHomePage> {
               maxLength: 12,
             ),
             customVerticalSpacer(30),
-            ElevatedButton(
-              onPressed: () async {
-                final userID = userIdController.text.trim();
-                await generateUserToken(userId: userID, isCreating: true);
-              },
-              child: const Text('Create a Livestream'),
-            ),
-            customVerticalSpacer(15),
-            ElevatedButton(
-              onPressed: () async {
-                final userID = userIdController.text.trim();
-                await generateUserToken(userId: userID, isCreating: false);
-              },
-              child: const Text('Join a Livestream'),
+            SizedBox(
+              height: 115,
+              child: loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            final userID = userIdController.text.trim();
+                            await generateUserToken(
+                              userId: userID,
+                              isCreating: true,
+                            );
+                          },
+                          child: const Text('Create a Livestream'),
+                        ),
+                        customVerticalSpacer(15),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final userID = userIdController.text.trim();
+                            await generateUserToken(
+                              userId: userID,
+                              isCreating: false,
+                            );
+                          },
+                          child: const Text('Join a Livestream'),
+                        ),
+                      ],
+                    ),
             ),
           ],
         ),

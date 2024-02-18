@@ -17,8 +17,19 @@ class LiveStreamScreen extends StatelessWidget {
 
   final Call currentStream;
 
+  bool checkViewToUse(List<CallParticipantState> callParticipants,
+      String desiredParticipantId) {
+    for (var callParticipant in callParticipants) {
+      if (callParticipant.userId == "enisco00") {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: StreamBuilder(
         stream: currentStream.state.valueStream,
@@ -26,15 +37,45 @@ class LiveStreamScreen extends StatelessWidget {
         builder: (context, snapshot) {
           final callState = snapshot.data!;
           print(" -------- ${callState.callParticipants}");
-          final participant = callState.callParticipants.first;
-          // .firstWhere((element) => element.isVideoEnabled);
+          // final participant = callState.callParticipants.firstWhere(
+          //   (element) => element.userId == 'enisco00',
+          //   // (element) => element.userId == 'enisco',
+          // );
+
+          bool check = checkViewToUse(callState.callParticipants, "enisco00");
+          final CallParticipantState participant;
+          if (check) {
+            participant = callState.callParticipants.firstWhere(
+              (element) => element.userId == 'enisco00',
+            );
+          } else {
+            participant = callState.callParticipants.firstWhere(
+              (element) => element.userId == 'eniola2',
+            );
+          }
+
+          print(
+              " /////////////// userId: ${participant.userId} \n isVideoEnabled: ${participant.isVideoEnabled} \nisSpeaking: ${participant.isSpeaking} \naudioLevel: ${participant.audioLevel}");
           return Stack(
             children: [
               if (snapshot.hasData)
-                StreamVideoRenderer(
-                  call: currentStream,
-                  videoTrackType: SfuTrackType.video,
-                  participant: participant,
+                Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.amber),
+                    ),
+                    height: size.height * 0.5,
+                    width: size.width * 0.8,
+                    child: StreamVideoRenderer(
+                      call: currentStream,
+                      videoTrackType: SfuTrackType.video,
+                      participant: participant,
+                      videoFit: VideoFit.cover,
+                      onSizeChanged: (value) {
+                        print("New Video Size: $value");
+                      },
+                    ),
+                  ),
                 ),
               if (!snapshot.hasData)
                 const Center(
@@ -77,7 +118,7 @@ class LiveStreamScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     color: Colors.black,
-                    child: GestureDetector(
+                    child: InkWell(
                       onTap: () {
                         currentStream.end();
                         Navigator.pop(context);
@@ -108,7 +149,7 @@ class LiveStreamScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     color: Colors.black,
-                    child: GestureDetector(
+                    child: InkWell(
                       onTap: () {
                         currentStream.leave();
                         Navigator.pop(context);
@@ -126,66 +167,6 @@ class LiveStreamScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              if (callState.localParticipant?.userId !=
-                  callState.createdByUserId)
-                Positioned(
-                  bottom: 10,
-                  child: Center(
-                    child: StreamCallContainer(
-                      call: currentStream,
-                      callContentBuilder: (
-                        BuildContext context,
-                        Call call,
-                        CallState callState,
-                      ) {
-                        return StreamCallContent(
-                          call: call,
-                          callState: callState,
-                          callControlsBuilder: (
-                            BuildContext context,
-                            Call call,
-                            CallState callState,
-                          ) {
-                            final localParticipant =
-                                callState.localParticipant!;
-                            return StreamCallControls(
-                              options: [
-                                CallControlOption(
-                                  icon: const Icon(Icons.chat_outlined),
-                                  onPressed: () {
-                                    // Open your chat window
-                                  },
-                                ),
-                                FlipCameraOption(
-                                  call: call,
-                                  localParticipant: localParticipant,
-                                ),
-                                AddReactionOption(
-                                  call: call,
-                                  localParticipant: localParticipant,
-                                ),
-                                ToggleMicrophoneOption(
-                                  call: call,
-                                  localParticipant: localParticipant,
-                                ),
-                                ToggleCameraOption(
-                                  call: call,
-                                  localParticipant: localParticipant,
-                                ),
-                                LeaveCallOption(
-                                  call: call,
-                                  onLeaveCallTap: () {
-                                    call.leave();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
                     ),
                   ),
                 ),
