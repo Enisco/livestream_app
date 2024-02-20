@@ -92,19 +92,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // -------------------------------------------
       final call = StreamVideo.instance.makeCall(
-        type: 'livestream',
+        // type: 'livestream',
+        type: 'default',
         id: callId,
       );
 
       call.connectOptions = CallConnectOptions(
-        // camera: isCreating ? TrackOption.enabled() : TrackOption.disabled(),
-        // microphone: isCreating ? TrackOption.enabled() : TrackOption.disabled(),
-        // screenShare:
-        //     isCreating ? TrackOption.enabled() : TrackOption.disabled(),
-
         camera: TrackOption.enabled(),
         microphone: TrackOption.enabled(),
-        // screenShare: TrackOption.enabled(),
       );
 
       final result = await call.getOrCreate();
@@ -118,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
         } else {
           print(' >>>>>>>>> Joining call ${call.id}');
         }
-        Navigator.of(context).push(LiveStreamScreen.route(call));
+        Navigator.of(context).push(LiveStreamScreen.route(call, userId));
       } else {
         print(' --------- Not able to create or join a call.');
       }
