@@ -83,17 +83,20 @@ class _MyHomePageState extends State<MyHomePage> {
         apiKey,
         user: User.regular(
           userId: userId,
-          role: isCreating ? 'admin' : 'user',
+          // role: isCreating ? 'gtubeadmin' : 'user',
+          role: isCreating ? 'erroradmin' : 'user',
           name: userName,
         ),
         userToken: token,
+        options: const StreamVideoOptions(),
       );
       print("${StreamVideo.instance.currentUser}");
 
       // -------------------------------------------
+
       final call = StreamVideo.instance.makeCall(
-        // type: 'livestream',
-        type: 'default',
+        // type: 'default',
+        callType: StreamCallType(),
         id: callId,
       );
 
@@ -108,11 +111,22 @@ class _MyHomePageState extends State<MyHomePage> {
         await call.join();
         if (isCreating == true) {
           // Create call and go Live, as creator
-          await call.goLive();
+          final goLive = await call.goLive(
+            // startRecording: true,
+          );
+          print("Live started: ${goLive.toString()}");
           print(' +++++++++++++ Creating call ${call.id}');
         } else {
           print(' >>>>>>>>> Joining call ${call.id}');
         }
+        final recordingUpdate = await call.update(
+          recording: const StreamRecordingSettings(
+            mode: RecordSettingsMode.available,
+            quality: RecordSettingsQuality.n1080p,
+          ),
+        );
+        print("RecordingUpdate: ${recordingUpdate.toString()}");
+
         Navigator.of(context).push(LiveStreamScreen.route(call, userId));
       } else {
         print(' --------- Not able to create or join a call.');
@@ -128,7 +142,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -185,6 +198,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ],
                     ),
+            ),
+            customVerticalSpacer(65),
+            ElevatedButton(
+              onPressed: () async {
+                final callQ = await StreamVideo.instance.queryCalls(
+                  filterConditions: {},
+                );
+                print(" --------------- callQ: ${callQ.toString()} ");
+              },
+              child: const Text('Last Call Rec'),
             ),
           ],
         ),

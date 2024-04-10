@@ -13,12 +13,11 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  stream_video_flutter: ^0.3.1
-  connectivity_plus: ^4.0.2
-  sqflite: ^2.3.2
+  stream_video_flutter: ^0.3.6
+  connectivity_plus: ^5.0.2
   flutter_webrtc: ^0.9.47
   path_provider: ^2.1.2
-  uuid: ^3.0.7
+  uuid: ^4.2.1
   fluttertoast: ^8.2.4
 
 dev_dependencies:

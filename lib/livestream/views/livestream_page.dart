@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:stream_video_flutter/stream_video_flutter.dart';
@@ -66,8 +66,8 @@ class LiveStreamScreen extends StatelessWidget {
                           width: 2,
                         ),
                       ),
-                      height: size.width * 0.95,
-                      width: size.width * 0.95,
+                      height: size.height,
+                      width: size.width,
                       child: StreamVideoRenderer(
                         call: currentStream,
                         videoTrackType: SfuTrackType.video,
@@ -121,8 +121,29 @@ class LiveStreamScreen extends StatelessWidget {
                       ),
                       color: Colors.black,
                       child: InkWell(
-                        onTap: () {
-                          currentStream.end();
+                        onTap: () async {
+                          final listRecordings =
+                              await currentStream.listRecordings();
+                          print(
+                              " --------------- listRecordings: ${listRecordings.toString()} ");
+                          final listRecordingsCall =
+                              await currentStream.listRecordings.call();
+                          print(
+                              " **************** listRecordingsCall: ${listRecordingsCall.toString()} ");
+
+                          final endCall = currentStream.end();
+                          print(
+                              " ================ endCall: ${endCall.toString()} /n After endcall ");
+
+                          final listRecordingsEnd =
+                              await currentStream.listRecordings();
+                          print(
+                              " --------------- listRecordingsEnd: ${listRecordingsEnd.toString()} ");
+                          final listRecordingsCallEnd =
+                              await currentStream.listRecordings.call();
+                          print(
+                              " **************** listRecordingsCallEnd: ${listRecordingsCallEnd.toString()} ");
+
                           Navigator.pop(context);
                         },
                         child: const Center(
