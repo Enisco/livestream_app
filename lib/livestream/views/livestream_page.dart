@@ -4,16 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:stream_video_flutter/stream_video_flutter.dart';
 
 class LiveStreamScreen extends StatelessWidget {
-  static route(Call call, String myUserId) => MaterialPageRoute(
+  static route(Call call, String myUserId, String remoteIdToView) =>
+      MaterialPageRoute(
         builder: (context) {
-          return LiveStreamScreen(currentStream: call, myUserId: myUserId);
+          return LiveStreamScreen(
+              currentStream: call,
+              myUserId: myUserId,
+              remoteIdToView: remoteIdToView);
         },
       );
-  final String myUserId;
+  final String myUserId, remoteIdToView;
 
   const LiveStreamScreen({
     super.key,
     required this.currentStream,
+    required this.remoteIdToView,
     required this.myUserId,
   });
 
@@ -22,7 +27,7 @@ class LiveStreamScreen extends StatelessWidget {
   bool checkViewToUse(List<CallParticipantState> callParticipants,
       String desiredParticipantId) {
     for (var callParticipant in callParticipants) {
-      if (callParticipant.userId == "enisco00") {
+      if (callParticipant.userId == remoteIdToView) {
         return true;
       }
     }
@@ -41,11 +46,12 @@ class LiveStreamScreen extends StatelessWidget {
             final callState = snapshot.data!;
             print(" -------- ${callState.callParticipants}");
 
-            bool check = checkViewToUse(callState.callParticipants, "enisco00");
+            bool check =
+                checkViewToUse(callState.callParticipants, remoteIdToView);
             final CallParticipantState participant;
             if (check) {
               participant = callState.callParticipants.firstWhere(
-                (element) => element.userId == 'enisco00',
+                (element) => element.userId == remoteIdToView,
               );
             } else {
               participant = callState.callParticipants.firstWhere(

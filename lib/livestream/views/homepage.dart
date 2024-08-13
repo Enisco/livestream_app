@@ -22,7 +22,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final TextEditingController streamIdController, userIdController;
+  late final TextEditingController streamIdController,
+      userIdController,
+      remoteUserIdController;
   bool loading = false;
 
   @override
@@ -30,9 +32,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     streamIdController = TextEditingController();
     userIdController = TextEditingController();
+    remoteUserIdController = TextEditingController();
   }
 
-  generateUserToken({required String userId, required bool isCreating}) async {
+  generateUserToken(
+      {required String userId,
+      required String remoteIdToView,
+      required bool isCreating}) async {
     setState(() {
       loading = true;
     });
@@ -54,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _createOrJoinLivestream(
         isCreating: isCreating,
         userStreamToken: tokenData.token!,
+        remoteIdToView: remoteIdToView,
       );
     }
   }
@@ -68,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _createOrJoinLivestream({
     required bool isCreating,
     required String userStreamToken,
+    required String remoteIdToView,
   }) async {
     try {
       final apiKey = 'mgeuu28wmz7g',
@@ -75,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
           userId = userIdController.text.trim(),
           userName = '$userId Tester',
           callId = streamIdController.text.trim();
+      remoteIdToView = remoteUserIdController.text.trim();
       print(" `````` Call ID: $callId ");
 
       StreamVideo.reset();
@@ -83,8 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
         apiKey,
         user: User.regular(
           userId: userId,
-          // role: isCreating ? 'gtubeadmin' : 'user',
-          role: isCreating ? 'erroradmin' : 'user',
+          role: isCreating ? 'gtubeadmin' : 'user',
           name: userName,
         ),
         userToken: token,
@@ -95,8 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // -------------------------------------------
 
       final call = StreamVideo.instance.makeCall(
-        // type: 'default',
-        callType: StreamCallType(),
+        callType: StreamCallType.defaultType(),
         id: callId,
       );
 
@@ -111,9 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await call.join();
         if (isCreating == true) {
           // Create call and go Live, as creator
-          final goLive = await call.goLive(
-            // startRecording: true,
-          );
+          final goLive = await call.goLive();
           print("Live started: ${goLive.toString()}");
           print(' +++++++++++++ Creating call ${call.id}');
         } else {
@@ -127,7 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         print("RecordingUpdate: ${recordingUpdate.toString()}");
 
-        Navigator.of(context).push(LiveStreamScreen.route(call, userId));
+        Navigator.of(context)
+            .push(LiveStreamScreen.route(call, userId, remoteIdToView));
       } else {
         print(' --------- Not able to create or join a call.');
       }
@@ -164,9 +170,14 @@ class _MyHomePageState extends State<MyHomePage> {
             customVerticalSpacer(20),
             CustomTextField(
               textEditingController: userIdController,
-              labelText: "Your Username",
-              hintText: "Enter your preferred username",
-              maxLength: 12,
+              labelText: "Your User ID",
+              hintText: "Enter your preferred user ID",
+            ),
+            customVerticalSpacer(20),
+            CustomTextField(
+              textEditingController: remoteUserIdController,
+              labelText: "View User ID",
+              hintText: "Enter the ID to view",
             ),
             customVerticalSpacer(30),
             SizedBox(
@@ -178,10 +189,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         ElevatedButton(
                           onPressed: () async {
                             final userID = userIdController.text.trim();
+                            final remoteUserId =
+                                remoteUserIdController.text.trim();
                             await generateUserToken(
-                              userId: userID,
-                              isCreating: true,
-                            );
+                                userId: userID,
+                                isCreating: true,
+                                remoteIdToView: remoteUserId);
                           },
                           child: const Text('Create a Livestream'),
                         ),
@@ -189,9 +202,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         ElevatedButton(
                           onPressed: () async {
                             final userID = userIdController.text.trim();
+                            final remoteUserId =
+                                remoteUserIdController.text.trim();
                             await generateUserToken(
                               userId: userID,
                               isCreating: false,
+                              remoteIdToView: remoteUserId,
                             );
                           },
                           child: const Text('Join a Livestream'),
