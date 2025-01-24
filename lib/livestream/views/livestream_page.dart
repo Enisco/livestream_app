@@ -45,6 +45,7 @@ class LiveStreamScreen extends StatelessWidget {
           builder: (context, snapshot) {
             final callState = snapshot.data!;
             print(" -------- ${callState.callParticipants}");
+            print(" No of participants: ${callState.callParticipants.length}");
 
             bool check =
                 checkViewToUse(callState.callParticipants, remoteIdToView);

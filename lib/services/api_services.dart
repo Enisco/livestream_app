@@ -2,11 +2,14 @@
 
 import 'package:http/http.dart' as http;
 
-const endpoint = "http://3.16.241.38:5000";
+// const endpoint = "http://3.16.241.38:5000";
+const endpoint = "https://gospeltube-livestream-test-server.onrender.com";
 
 class ApiService {
   Future generateToken(String userId) async {
-    final response = await http.get(Uri.parse('$endpoint/get_token/$userId'));
+    final response = await http.get(
+      Uri.parse('$endpoint/user/get_token/$userId'),
+    );
 
     if (response.statusCode == 200) {
       print(" __________ ${response.body} ");
@@ -29,7 +32,7 @@ class ApiService {
     }
   }
 
-  Future startRecordingLivestream( String callId) async {
+  Future startRecordingLivestream(String callId) async {
     final response = await http.get(
       Uri.parse('$endpoint/start_recording/$callId'),
     );
@@ -42,7 +45,7 @@ class ApiService {
     }
   }
 
-  Future endLiveGetRecording( String callId) async {
+  Future endLiveGetRecording(String callId) async {
     final response = await http.get(
       Uri.parse('$endpoint/get_recording/$callId'),
     );

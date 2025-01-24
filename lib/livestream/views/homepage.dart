@@ -35,10 +35,11 @@ class _MyHomePageState extends State<MyHomePage> {
     remoteUserIdController = TextEditingController();
   }
 
-  generateUserToken(
-      {required String userId,
-      required String remoteIdToView,
-      required bool isCreating}) async {
+  generateUserToken({
+    required String userId,
+    required String remoteIdToView,
+    required bool isCreating,
+  }) async {
     setState(() {
       loading = true;
     });
@@ -78,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
     required String remoteIdToView,
   }) async {
     try {
-      final apiKey = 'mgeuu28wmz7g',
+      final apiKey = 'gcwwb5wde69h',
           token = userStreamToken,
           userId = userIdController.text.trim(),
           userName = '$userId Tester',
@@ -92,7 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
         apiKey,
         user: User.regular(
           userId: userId,
-          role: isCreating ? 'gtubeadmin' : 'user',
+          // role: isCreating ? 'gtubeadmin' : 'user',
+          role: isCreating ? 'user' : 'user',
           name: userName,
         ),
         userToken: token,
@@ -103,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // -------------------------------------------
 
       final call = StreamVideo.instance.makeCall(
-        callType: StreamCallType.defaultType(),
+        callType: StreamCallType.liveStream(),
         id: callId,
       );
 
@@ -118,19 +120,19 @@ class _MyHomePageState extends State<MyHomePage> {
         await call.join();
         if (isCreating == true) {
           // Create call and go Live, as creator
-          final goLive = await call.goLive();
-          print("Live started: ${goLive.toString()}");
+          // final goLive = await call.goLive();
+          // print("Live started: ${goLive.toString()}");
           print(' +++++++++++++ Creating call ${call.id}');
         } else {
           print(' >>>>>>>>> Joining call ${call.id}');
         }
-        final recordingUpdate = await call.update(
-          recording: const StreamRecordingSettings(
-            mode: RecordSettingsMode.available,
-            quality: RecordSettingsQuality.n1080p,
-          ),
-        );
-        print("RecordingUpdate: ${recordingUpdate.toString()}");
+        // final recordingUpdate = await call.update(
+        //   recording: const StreamRecordingSettings(
+        //     mode: RecordSettingsMode.available,
+        //     quality: RecordSettingsQuality.n1080p,
+        //   ),
+        // );
+        // print("RecordingUpdate: ${recordingUpdate.toString()}");
 
         Navigator.of(context)
             .push(LiveStreamScreen.route(call, userId, remoteIdToView));
