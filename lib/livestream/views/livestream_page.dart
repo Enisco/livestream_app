@@ -129,28 +129,31 @@ class LiveStreamScreen extends StatelessWidget {
                       color: Colors.black,
                       child: InkWell(
                         onTap: () async {
-                          final listRecordings =
-                              await currentStream.listRecordings();
-                          print(
-                              " --------------- listRecordings: ${listRecordings.toString()} ");
-                          final listRecordingsCall =
-                              await currentStream.listRecordings.call();
-                          print(
-                              " **************** listRecordingsCall: ${listRecordingsCall.toString()} ");
+                          // final listRecordings =
+                          //     await currentStream.listRecordings();
+                          // print(
+                          //     " --------------- listRecordings: ${listRecordings.toString()} ");
+                          // final listRecordingsCall =
+                          //     await currentStream.listRecordings.call();
+                          // print(
+                          //     " **************** listRecordingsCall: ${listRecordingsCall.toString()} ");
 
-                          final endCall = currentStream.end();
-                          print(
-                              " ================ endCall: ${endCall.toString()} /n After endcall ");
+                          // final endCall = currentStream.end();
+                          // print(
+                          //     " ================ endCall: ${endCall.toString()} /n After endcall ");
 
-                          final listRecordingsEnd =
-                              await currentStream.listRecordings();
-                          print(
-                              " --------------- listRecordingsEnd: ${listRecordingsEnd.toString()} ");
-                          final listRecordingsCallEnd =
-                              await currentStream.listRecordings.call();
-                          print(
-                              " **************** listRecordingsCallEnd: ${listRecordingsCallEnd.toString()} ");
+                          // final listRecordingsEnd =
+                          //     await currentStream.listRecordings();
+                          // print(
+                          //     " --------------- listRecordingsEnd: ${listRecordingsEnd.toString()} ");
+                          // final listRecordingsCallEnd =
+                          //     await currentStream.listRecordings.call();
+                          // print(
+                          //     " **************** listRecordingsCallEnd: ${listRecordingsCallEnd.toString()} ");
 
+                          // Navigator.pop(context);
+                          
+                          currentStream.leave();
                           Navigator.pop(context);
                         },
                         child: const Center(

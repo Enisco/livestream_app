@@ -82,7 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
       final apiKey = 'gcwwb5wde69h',
           token = userStreamToken,
           userId = userIdController.text.trim(),
-          userName = '$userId Tester',
           callId = streamIdController.text.trim();
       remoteIdToView = remoteUserIdController.text.trim();
       print(" `````` Call ID: $callId ");
@@ -95,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
           userId: userId,
           // role: isCreating ? 'gtubeadmin' : 'user',
           role: isCreating ? 'user' : 'user',
-          name: userName,
+          name: isCreating ? "GtubeChurch $userId" : "$userId Tester",
         ),
         userToken: token,
         options: const StreamVideoOptions(),
@@ -194,9 +193,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             final remoteUserId =
                                 remoteUserIdController.text.trim();
                             await generateUserToken(
-                                userId: userID,
-                                isCreating: true,
-                                remoteIdToView: remoteUserId);
+                              userId: userID,
+                              isCreating: true,
+                              remoteIdToView: remoteUserId,
+                            );
                           },
                           child: const Text('Create a Livestream'),
                         ),
